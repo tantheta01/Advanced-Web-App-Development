@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Card, Button, CardTitle, CardText, Row, Col, CardImg } from 'reactstrap';
 
-class ClassName extends Component {
+class Product extends Component {
 
 
 
@@ -19,7 +19,7 @@ class ClassName extends Component {
 					"name" : "SastiBike", "img" : "review2.jpeg", "id" : 2, "price" : "3 lakh"
 				},
 				{
-					"name" : "Aur Bhi SastiBike", "img" : "spectogram.png", "id" : 3, "price" : "5 rupees"
+					"name" : "Aur Bhi SastiBike", "img" : "spectrogram.png", "id" : 3, "price" : "5 rupees"
 				},
 				{
 					"name" : "Akshat Ki Luna", "image" : "ThirdModel.jpg", "id": 4, "price" : "1 rupees"
@@ -31,34 +31,66 @@ class ClassName extends Component {
 			}
 
 		}
+		this.handleClick = this.handleClick.bind(this);
 	}
-	render() {
+	 handleClick(e) {
+        let arrnew = this.state.compare.arr;
+        let temp = arrnew.indexOf(e.target.id)
+        if (temp != -1) {
+            arrnew.splice(temp, 1)
+        }
+        else {
+            arrnew.push(e.target.id)
+        }
+        // console.log(event)
+        this.setState({ compare: { arr: arrnew } });
+    }
+    render() {
 
-		return (
+        let temparr = this.state.compare.arr
+        let temp = []
+        let Compare;
+        for (var i = 0; i < temparr.length; i++) {
+            let x = this.state.products.find(prod => prod.id == temparr[i]);
+            temp.push(x)
+        }
 
-			<Row>
-				{
-					this.state.products.map((product, index) => (
-						<Col key = {product.id} md = "2" lg = "2" >
-							<Card body outline engine = "primary" > 
-								<img height="120px" width="240px" src={require("../assets/images/" + product.img)}/>
-									<CardTitle> {product.name}</CardTitle>
-									<Button type="button" id = {product.id} onClick = {this.handleClick}>Button</Button>
-							</Card>
+        return (
+            <div>
+                <Row>
+                    {this.state.products.map((product, index) => (
+                        <Col key={product.id}>
+                            <Card body outline engine="primary">
+                                <img height="120px" width="240px" src={require("../assets/images/" + product.img)} alt={product.name} />
+                                <CardTitle>{product.name}</CardTitle>
+                                <Button type="button" id={product.id} onClick={this.handleClick}>{(this.state.compare.arr.indexOf(product.id) < 0) ? "Compare" : "Remove"}</Button>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
 
-						</Col>
+                <Table>
+                    <thead>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Engine</th>
+                    </thead>
+                    {temp.map((product) => (
+                        <tbody>
+                            <tr>
+                                <td>{product.name}</td>
+                                <td>{product.price}</td>
+                                <td>{product.engine}</td>
+                            </tr>
 
+                        </tbody>
 
-						)
+                    ))}
+                </Table>
 
-
-						)
-				}
-			</Row>
-			)
-	}
-
+            </div >
+        )
+    }
 }
 
-
-export default ClassName;
+export default Product;
