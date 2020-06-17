@@ -1,39 +1,27 @@
 import React, { Component } from 'react';
+
 import { Table, Card, Button, CardTitle, CardText, Row, Col, CardImg } from 'reactstrap';
 
 class Product extends Component {
+    constructor() {
+        super();
+
+        this.state = {
+            products: [{ "name": "KTM Duke", "img": "ThirdModel.jpg", "id": 1, "price": "2 lakh", "engine": "299 cc" },
+            { "name": "KTM RC", "img": "AkshatConfessions.png", "id": 2, "price": "2.2 lakh", "engine": "299 cc" },
+            { "name": "Ninja", "img": "review2.jpeg", "id": 3, "price": "3.7 lakh", "engine": "350 cc" },
+            { "name": "BMW S", "img": "spectrogram.png", "id": 4, "price": "6.8 lakh", "engine": "800 cc" }
+           
+            ],
+            compare: {
+                arr: []
+            }
+        }
+        this.handleClick = this.handleClick.bind(this);
 
 
-
-	constructor(){
-
-		super();
-
-		this.state = {
-
-			products : [
-				{
-					"name" : "KTM", "img" : "AkshatConfessions.png", "id" : 1, "price" : "2 lakh"
-				},
-				{
-					"name" : "SastiBike", "img" : "review2.jpeg", "id" : 2, "price" : "3 lakh"
-				},
-				{
-					"name" : "Aur Bhi SastiBike", "img" : "spectrogram.png", "id" : 3, "price" : "5 rupees"
-				},
-				{
-					"name" : "Akshat Ki Luna", "image" : "ThirdModel.jpg", "id": 4, "price" : "1 rupees"
-				},
-
-			],
-			compare: {
-				arr : []
-			}
-
-		}
-		this.handleClick = this.handleClick.bind(this);
-	}
-	 handleClick(e) {
+    }
+    handleClick(e) {
         let arrnew = this.state.compare.arr;
         let temp = arrnew.indexOf(e.target.id)
         if (temp != -1) {
