@@ -1,13 +1,21 @@
 import React from 'react';
 import logo from './logo.svg';
-import Menu from './components/MenuComponent';
 import { Navbar, NavbarBrand } from 'reactstrap';
+import Menu from './components/MenuComponent';
 import './App.css';
 
 function App() {
   return (
-    
-    <Menu />
+      <div className = "App">
+      <Navbar dark color='primary'>
+      <div className = 'container'>
+      <NavbarBrand href="/">Hey waana eat</NavbarBrand>
+      </div>
+      </Navbar>
+       <Menu />
+      </div>
+
+   
   );
 }
 
