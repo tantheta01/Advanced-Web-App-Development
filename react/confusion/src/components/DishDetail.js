@@ -1,25 +1,63 @@
 import React,  { Component } from 'react';
 import { Media } from 'reactstrap';
 import { Card, CardImg, CardImgOverlay, CardText, CardTitle, CardBody } from 'reactstrap';
+import { ListGroup, ListGroupItem } from 'reactstrap';
+
 
 
 class Detail extends Component {
 	constructor(props){
 		super(props);
-		this.state = {
-			selectedDish : null
+		
+	}
+
+	renderComments(dish){
+		if(dish == null) return (<div></div>);
+		const Comm = dish.comments.map((comment) => {
+			return (
+					<ListGroupItem>{comment.comment} {'\n'} -- {comment.author} {comment.date}</ListGroupItem>
+				);
+		});
+		return (
+				<div>
+				<h4>
+				Comments
+				</h4>
+					<ListGroup>
+						{ Comm }
+					</ListGroup>
+					
+				</div>
+			);
+
+	}
+
+	renderDish(){
+		if (this.props.dish!=null){
+			return (
+					<Card>
+						<CardImg top src = {this.props.dish.image}/>
+						<CardBody>
+							<CardTitle>{ this.props.dish.name }</CardTitle>
+							<CardText>{ this.props.dish.description }</CardText>
+						</CardBody>
+					</Card>
+
+				);
 		}
+		else return (<div></div>);
 	}
-
-	onSelectDish(dish) {
-
-		this.setState({selectedDish : dish});
+	render() {
+		return (
+				<div className = 'container'>
+					<div className = 'row'>
+					{this.renderDish()}
+					{this.renderComments(this.props.dish)}
+					</div>
+				</div>
+			);
 	}
-
-	renderDish(dish) {
-
-		if (dish != null) {
-			
-		}
-	}
+	
 }
+
+export default Detail;
