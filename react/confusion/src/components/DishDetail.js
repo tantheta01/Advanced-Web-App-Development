@@ -34,7 +34,7 @@ class Detail extends Component {
 
 	renderDish(){
 		if (this.props.dish!=null){
-			return (
+			return (<div className = 'col-12 col-md-5 m-1'>
 					<Card>
 						<CardImg top src = {this.props.dish.image}/>
 						<CardBody>
@@ -42,7 +42,7 @@ class Detail extends Component {
 							<CardText>{ this.props.dish.description }</CardText>
 						</CardBody>
 					</Card>
-
+					</div>
 				);
 		}
 		else return (<div></div>);
