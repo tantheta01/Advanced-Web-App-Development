@@ -1,0 +1,16 @@
+{
+  "name": "httpmodule",
+  "version": "1.0.0",
+  "description": "Learning about http module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node index"
+  },
+  "keywords": [
+    "Hppp",
+    "modules"
+  ],
+  "author": "Tanay Sharma",
+  "license": "ISC"
+}
