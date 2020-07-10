@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
 		else {
 			res.statusCode = 404;
 			res.setHeader('Content-type', 'html/text');
-			res.end('<html><body>Error 404 ' + fileUrl + ' not an html document</body></html>');
+			res.end('<html><body><h1>Error 404 ' + fileUrl + ' not an html document</h1></body></html>');
 			return;
 		}
 	}
