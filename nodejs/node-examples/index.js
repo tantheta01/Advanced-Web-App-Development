@@ -1,12 +1,15 @@
 var rect = require('./rectangle')
 
 function solveRect(l,b) {
-	if(l<=0 || b<=0){
-		console.log("Bhag saale");
-	}
-	else{
-		console.log("Perimeter of the rectangle " + rect.perimeter(l,b) + " Area of the rectangle: " + rect.area(l,b));
-	}
+	rect(l, b, (err, rectangle) => {
+		if(err){
+			console.log(err.message);
+		}
+		else{
+			console.log(rectangle.perimeter() + rectangle.area());
+		}
+	});
+	console.log("After the rect");
 }
 
 
