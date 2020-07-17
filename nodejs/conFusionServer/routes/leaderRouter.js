@@ -1,39 +1,63 @@
-const express = require('express')
+const express = require('express');
 const bodyParser = require('body-parser');
-
-leaderRouter = express.Router();
+const Leaders = require ('../models/leaders')
+const mongoose = require('mongoose')
+const leaderRouter = express.Router();
 leaderRouter.use(bodyParser.json());
 
-leaderRouter.route('/').all((req, res, next) => {
-	res.statusCode = 200;
-	res.setHeader("Content-Type", 'text');
-	next();
-}).get((req, res, next) => {
-	res.end("We shall send you that leader bro");
+
+leaderRouter.route('/')
+.get((req, res, next) => {
+	Leaders.find({}).then((leaders) => {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json')
+		res.json(leaders);
+	}, (err) => next(err)).catch((err) => next(err))
 
 }).post((req, res, next) => {
-	res.end("Yes bro we shall add " + req.body.name + " and his description " + req.body.description);
+	Leaders.create(res.body).then((leaders) => {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json')
+		res.json(leaders);
 
+	}, (err) => next(err)).catch((err) => next(err))
 }).put((req, res, next) => {
-	res.statusCode = 403;
-	res.end("Bro this command isn't supported bro");
+	res.statusCode = 403
+	res.setHeader('Content-Type', 'text')
+	res.end("The PUT is not supported")
 }).delete((req, res, next) => {
-	res.end("Jus about to delete all the leaders");
+	Leaders.remove({}).then((resp) => {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json')
+		res.json(resp);
+	},(err) => next(err)).catch((err) => next(err))
 })
 
-leadersRouter = express.Router();
-leadersRouter.use(bodyParser.json());
+leaderRouter.route('/:leaderId')
+.get((req, res, next) => {
+	Leaders.findById(req.params.leaderId).then((leader) => {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json')
+		res.json(leader);
+	}, (err) => next(err)).catch((err) => next(err))
 
-leadersRouter.route('/:leaderId').get((req, res, next) => {
-	res.end("We shall get u leader number " + req.params.leaderId);
-})
-.post((req, res, next) => {
-	res.end("This action is not supported");
+}).post((req, res, next) => {
+	res.statusCode = 403
+	res.setHeader('Content-Type', 'text')
+	res.end("The PUT is not supported")
 }).put((req, res, next) => {
-	res.end("We shall update the leader number " + req.params.leaderId + " by your new leader");
+	Leaders.findByIdAndUpdate(req.params.leaderId, { $set: req.body }, { new: true }).then((leader) => {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json')
+		res.json(leader)
+	}, ((err) => next(err))).catch((err) => next(err))
 }).delete((req, res, next) => {
-	res.end("Okay bro we are deleting the leader number " + req.params.leaderId);
+	Leaders.findByIdAndRemove(req.params.leaderId).then((resp) => {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json')
+		res.json(resp);
+	},(err) => next(err)).catch((err) => next(err))
 })
 
-module.exports.leaderRouter = leaderRouter;
-module.exports.leadersRouter = leadersRouter;
+
+module.exports = leaderRouter;

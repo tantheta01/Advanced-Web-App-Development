@@ -2,11 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Dishes = require ('../models/dishes')
 const mongoose = require('mongoose')
-const dishRouter1 = express.Router();
-dishRouter1.use(bodyParser.json());
+const dishRouter = express.Router();
+dishRouter.use(bodyParser.json());
 
 
-dishRouter1.route('/')
+dishRouter.route('/')
 .get((req, res, next) => {
 	Dishes.find({})
 	.then((dishes) => {
@@ -42,11 +42,7 @@ dishRouter1.route('/')
 })
 
 
-const dishRouter2 = express.Router();
-dishRouter2.use(bodyParser.json());
-
-
-dishRouter2.route('/:dishId')
+dishRouter.route('/:dishId')
 .get((req, res, next) => {
 	Dishes.findById(req.params.dishId).then((dish) => {
 		res.statusCode = 200;
@@ -69,15 +65,169 @@ dishRouter2.route('/:dishId')
 	}, ((err) => next(err))).catch((err) => next(err))
 })
 .delete((req, res, next) => {
-	Dishes.remove(req.params.dishId)
+	Dishes.findByIdAndRemove(req.params.dishId)
 	.then((resp) => {
 		res.statusCode = 200;
 		res.setHeader('Content-Type', 'application/json')
 	}, ((err) => next(err))).catch((err) => next(err))
 })
 
+dishRouter.route('/:dishId/comments')
+.get((req, res, next) => {
+	Dishes.findById(req.params.dishId)
+	.then((dish) => {
+		if(dish != null){
+			res.statusCode = 200
+			res.setHeader('Content-Type', 'application/json')
+			res.json(dish.comments);
+		}
+		else {
+			res.statusCode = 404;
+			err = new Error("The Dish is not found.")
+			return next(err)
+		}
+		
+	}, (err) => {
+		next(err);
+	}).catch((err) => {
+		next(err);
+	})
+}).post((req, res, next) => {
+	Dishes.findById(req.params.dishId)
+	.then((dish) => {
+		if(dish != null){
+			
+			dish.comments.push(req.body)
+			dish.save()
+			.then((dish) => {
+				res.statusCode = 200
+				res.setHeader('Content-Type', 'application/json')
+				res.json(dish);
+			}, ((err) => next(err)) )
+			
+		}
+		else {
+			res.statusCode = 404;
+			err = new Error("The Dish is not found.")
+			return next(err)
+		}
+	}, ((err) => next(err))).catch((err) => next(err))
+
+})
+
+.put((req, res, next) => {
+	res.statusCode = 403;
+	res.end("PUT operation on comments not supported");
+
+}).delete((req, res, next) => {
+	Dishes.findById(req.params.dishId)
+	.then((dish) => {
+		if(dish != null){
+			
+			for(var i = (dish.comments.length)-1; i>=0; i--){
+				dish.comments.id(dish.comments[i]._id).remove();
+			}
+			dish.save()
+			.then((dish) => {
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json')
+				res.json(dish);
+			})
+		}
+
+		else {
+			res.statusCode = 404;
+			err = new Error("The Dish is not found.")
+			return next(err)
+		}
+	}, ((err) => next(err))).catch((err) => next(err))
+})
 
 
-module.exports.one = dishRouter1;
-module.exports.two = dishRouter2;
+dishRouter.route('/:dishId/comments/:commentId')
+.get((req, res, next) => {
+	Dishes.findById(req.params.dishId)
+	.then((dish) => {
+		if(dish != null && dish.comments.id(req.params.commentId )!= null){
+			res.statusCode = 200
+			res.setHeader('Content-Type', 'application/json')
+			res.json(dish.comments.id(req.params.commentId));
+		}
+		else if(dish == null){
+			res.statusCode = 404;
+			err = new Error("The Dish is not found.")
+			return next(err)
+		}
+		else {
+			res.statusCode = 404;
+			err = new Error("The Comment is not found.")
+			return next(err)
+		}
+	}, ((err) => next(err))).catch((err) => next(err))
+})
+.post((req, res, next) => {
+	res.statusCode = 403;
+	res.end("POST operation in the dish not supported");
+})
+.put((req, res, next) => {
+	Dishes.findById(req.params.dishId)
+	.then((dish) => {
+		if(dish != null && dish.comments.id(req.params.commentId)!= null){
+			
+			if(req.body.comment){
+				dish.comments.id(req.params.commentId).comment = req.body.comment
+			}
+			if(req.body.rating){
+				dish.comments.id(req.params.commentId).rating = req.body.rating
+			}
+			dish.save()
+			.then((dish) => {
+				res.statusCode = 200
+				res.setHeader('Content-Type', 'application/json')
+				res.json(dish.comments.id(req.params.commentId));
+			}, ((err) => next(err)))
+
+			
+		}
+		else if(dish == null){
+			res.statusCode = 404;
+			err = new Error("The Dish is not found.")
+			return next(err)
+		}
+		else {
+			res.statusCode = 404;
+			err = new Error("The Comment is not found.")
+			return next(err)
+		}
+	}, ((err) => next(err))).catch((err) => next(err))
+})
+.delete((req, res, next) => {
+	Dishes.findById(req.params.dishId)
+	.then((dish) => {
+		if(dish != null && dish.comments.id(req.params.commentId )!= null){
+			dish.comments.id(req.params.commentId).remove();
+			dish.save()
+			.then((dish) => {
+				res.statusCode = 200
+				res.setHeader('Content-Type', 'application/json')
+				res.json(dish)
+			}, ((err) => {next(err)}))
+			
+		}
+		else if(dish == null){
+			res.statusCode = 404;
+			err = new Error("The Dish is not found.")
+			return next(err)
+		}
+		else {
+			res.statusCode = 404;
+			err = new Error("The Comment is not found.")
+			return next(err)
+		}
+	}, ((err) => next(err))).catch((err) => next(err))
+})
+
+
+module.exports = dishRouter;
+
 

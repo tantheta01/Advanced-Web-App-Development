@@ -24,24 +24,66 @@ connect.then((db) => {
 	console.log(err)
 })
 
-// view engine setup
+// view engine setup	
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('12345-67890-00998'));
+
+function auth (req, res, next) {
+
+	if(!req.signedCookies.user){
+		var author = req.headers.authorization;
+		if(!author) {
+			var err = new Error("You are not authorized bro!")
+			res.setHeader("WWW-Authenticate", 'Basic')
+			err.status = 401
+			return next(err)
+		}
+		var autho = new Buffer.from(author.split(' ')[1], 'base64').toString().split(":")
+		username = autho[0]
+		password = autho[1]
+		console.log(username)
+		console.log(password)
+
+		if(username == 'admin' && password == 'password'){
+			res.cookie("user", "admin", { signed : true })
+			next();
+		}
+			
+		else {
+			var err = new Err("You are not authorized bro!")
+			res.setHeader("WWW-Authenticate", 'Basic')
+			err.status = 401
+			return next(err)
+		}
+	}
+	else if(req.signedCookies.user == 'admin'){
+		next()
+	}
+	else
+	{
+		var err = new Err("You are not authorized bro!")
+		// res.setHeader("WWW-Authenticate", 'Basic')
+		err.status = 401
+		return next(err)
+	}
+
+	
+}
+
+app.use(auth)
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/dishes', dishRouter.one);
-app.use('/dishes', dishRouter.two);
-app.use('/leader', leaderRouter.leaderRouter);
-app.use('/leader', leaderRouter.leadersRouter);
-app.use('/promo', promoRouter.promotionRouter);
-app.use('/promo', promoRouter.promotionsRouter);
+app.use('/dishes', dishRouter);
+app.use('/leader', leaderRouter);
+app.use('/promo', promoRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
